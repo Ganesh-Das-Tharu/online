@@ -14,6 +14,7 @@
  * 4) Start: node server.js
  * 5) Open:  http://localhost:3000
  */
+require('dotenv').config();
 
 const express = require('express');
 const session = require('express-session');
@@ -24,18 +25,19 @@ const sqlite3 = require('sqlite3').verbose();
 const app = express();
 app.use(express.static("public"));
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-// ---------- Middleware ----------
-app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   session({
-    secret: 'change-this-secret',
+    secret: process.env.SESSION_SECRET || 'defaultSecret',
     resave: false,
     saveUninitialized: false,
     cookie: { maxAge: 1000 * 60 * 60 * 12 }, // 12h
   })
 );
+
+const db = new sqlite3.Database(process.env.DB_PATH || 'app.db');
+
 
 // Basic styles
 const baseStyles = `
